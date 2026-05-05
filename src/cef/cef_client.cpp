@@ -2,7 +2,6 @@
 #include "logging.h"
 #include "../common.h"
 #include "../cjson/cJSON.h"
-#include "../mpv/event.h"
 #include "../platform/platform.h"
 #include "include/cef_task.h"
 #include <cstdio>
@@ -372,7 +371,7 @@ void CefLayer::OnLoadError(CefRefPtr<CefBrowser>, CefRefPtr<CefFrame>,
 }
 
 void CefLayer::OnFullscreenModeChange(CefRefPtr<CefBrowser>, bool fullscreen) {
-    if (g_lock_fullscreen.load(std::memory_order_relaxed) && fullscreen != mpv::fullscreen())
+    if (g_lock_fullscreen.load(std::memory_order_relaxed))
         return;
     g_platform.set_fullscreen(fullscreen);
 }

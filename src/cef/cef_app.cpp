@@ -1,6 +1,5 @@
 #include "cef_app.h"
 #include "resource_handler.h"
-#include "../cjson/cJSON.h"
 #include "../settings.h"
 #include "../paths/paths.h"
 #include "embedded_js.h"

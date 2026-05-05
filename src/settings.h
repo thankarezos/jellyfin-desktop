@@ -65,9 +65,6 @@ public:
     bool forceTranscoding() const { return force_transcoding_; }
     void setForceTranscoding(bool v) { force_transcoding_ = v; }
 
-    bool lockFullscreen() const { return lock_fullscreen_; }
-    void setLockFullscreen(bool v) { lock_fullscreen_ = v; }
-
     // JSON string of CLI-equivalent settings (for injection into JS)
     std::string cliSettingsJson() const;
 
@@ -88,7 +85,6 @@ private:
     bool transparent_titlebar_ = true;
     std::string log_level_;
     bool force_transcoding_ = false;
-    bool lock_fullscreen_ = false;
 
     std::mutex save_mutex_;  // Prevent concurrent saves
 };
