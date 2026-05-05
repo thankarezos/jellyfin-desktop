@@ -6,6 +6,8 @@
 #include <sstream>
 #include <thread>
 
+#include "common.h"
+
 Settings& Settings::instance() {
     static Settings instance;
     return instance;
@@ -72,6 +74,7 @@ bool Settings::load() {
     transparent_titlebar_ = jsonBool(root, "transparentTitlebar", true);
     log_level_ = jsonStr(root, "logLevel");
     force_transcoding_ = jsonBool(root, "forceTranscoding", false);
+    lock_fullscreen_ = jsonBool(root, "lockFullscreen", false);
 
     cJSON_Delete(root);
     return true;
@@ -108,6 +111,7 @@ static std::string buildSettingsJson(const Settings& s, bool pretty) {
     if (!s.transparentTitlebar()) cJSON_AddBoolToObject(root, "transparentTitlebar", false);
     if (!s.logLevel().empty()) cJSON_AddStringToObject(root, "logLevel", s.logLevel().c_str());
     if (s.forceTranscoding()) cJSON_AddBoolToObject(root, "forceTranscoding", true);
+    if (s.lockFullscreen()) cJSON_AddBoolToObject(root, "lockFullscreen", true);
 
     char* str = pretty ? cJSON_Print(root) : cJSON_PrintUnformatted(root);
     std::string result(str);
@@ -150,6 +154,7 @@ std::string Settings::cliSettingsJson() const {
     if (!transparent_titlebar_) cJSON_AddBoolToObject(root, "transparentTitlebar", false);
     if (!log_level_.empty()) cJSON_AddStringToObject(root, "logLevel", log_level_.c_str());
     cJSON_AddBoolToObject(root, "forceTranscoding", force_transcoding_);
+    if (lock_fullscreen_) cJSON_AddBoolToObject(root, "lockFullscreen", true);
 
     cJSON* opts = cJSON_AddArrayToObject(root, "hwdecOptions");
     for (const auto& o : hwdecOptions())

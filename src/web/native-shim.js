@@ -4,6 +4,11 @@
     // Fullscreen state tracking via HTML5 Fullscreen API
     window._isFullscreen = false;
 
+    function lockFullscreenEnabled() {
+        const value = window.jmpInfo?.settings?.main?.lockFullscreen;
+        return value === true || value === 'true';
+    }
+
     document.addEventListener('fullscreenchange', () => {
         const fullscreen = !!document.fullscreenElement;
         if (window._isFullscreen === fullscreen) return;
@@ -17,7 +22,7 @@
     });
 
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && window._isFullscreen) {
+        if (!lockFullscreenEnabled() && e.key === 'Escape' && window._isFullscreen) {
             document.exitFullscreen().catch(() => {});
         }
     });
@@ -34,7 +39,7 @@
             const dx = e.clientX - lastX;
             const dy = e.clientY - lastY;
             if ((now - lastTime) < 500 && (dx * dx + dy * dy) < 25) {
-                if (document.querySelector('.videoPlayerContainer')) {
+                if (!lockFullscreenEnabled() && document.querySelector('.videoPlayerContainer')) {
                     if (window.jmpNative) window.jmpNative.toggleFullscreen();
                 }
                 lastTime = 0;
@@ -89,7 +94,7 @@
             { key: 'advanced', order: 3 }
         ],
         settings: {
-            main: { enableMPV: true, fullscreen: false, userWebClient: '__SERVER_URL__' },
+            main: { enableMPV: true, fullscreen: false, lockFullscreen: __LOCK_FULLSCREEN__, userWebClient: '__SERVER_URL__' },
             playback: {
                 hwdec: _savedSettings.hwdec || 'auto'
             },
@@ -125,6 +130,7 @@
                 { key: 'forceTranscoding', displayName: 'Force Transcoding', help: 'Always request a transcoded stream from the server, even when direct play would work.' }
             ],
             advanced: [
+                { key: 'lockFullscreen', displayName: 'Lock Fullscreen', help: 'Prevent entering or exiting fullscreen while playback is active.' },
                 { key: 'logLevel', displayName: 'Log Level', help: 'Set the application log verbosity level.', options: [
                     { value: '', title: 'Default (Info)' },
                     { value: 'verbose', title: 'Verbose' },
@@ -137,6 +143,8 @@
         settingsUpdate: [],
         settingsDescriptionsUpdate: []
     };
+    window.jmpInfo.settings.main.lockFullscreen = lockFullscreenEnabled();
+    window._fullscreenToggleLocked = window.jmpInfo.settings.main.lockFullscreen;
 
     // macOS-only: transparent titlebar toggle (shown first in Advanced section)
     if (navigator.platform.startsWith('Mac')) {

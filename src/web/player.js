@@ -196,6 +196,7 @@
     });
 
     btnFullscreen.addEventListener('click', function() {
+        if (window.jmpInfo?.settings?.main?.lockFullscreen) return;
         if (document.fullscreenElement) {
             document.exitFullscreen();
         } else {

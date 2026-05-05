@@ -66,6 +66,7 @@ static void applySettingValue(const std::string& section, const std::string& key
     else if (key == "titlebarThemeColor") s.setTitlebarThemeColor(value == "true");
     else if (key == "logLevel") s.setLogLevel(value);
     else if (key == "forceTranscoding") s.setForceTranscoding(value == "true");
+    else if (key == "lockFullscreen") s.setLockFullscreen(value == "true");
     else LOG_WARN(LOG_CEF, "Unknown setting key: {}.{}", section.c_str(), key.c_str());
     s.saveAsync();
 }
@@ -103,6 +104,7 @@ CefRefPtr<CefDictionaryValue> WebBrowser::injectionProfile() {
         "input-plugin.js",
         "client-settings.js",
         "context-menu.js",
+        "disable-fullscreen-button.js",
     };
 
     CefRefPtr<CefListValue> fns = CefListValue::Create();
@@ -205,7 +207,8 @@ bool WebBrowser::handleMessage(const std::string& name,
                 g_platform.set_fullscreen(false);
         }
     } else if (name == "toggleFullscreen") {
-        g_platform.toggle_fullscreen();
+        if (!Settings::instance().lockFullscreen())
+            g_platform.toggle_fullscreen();
     } else if (name == "saveServerUrl") {
         std::string url = args->GetString(0).ToString();
         Settings::instance().setServerUrl(url);

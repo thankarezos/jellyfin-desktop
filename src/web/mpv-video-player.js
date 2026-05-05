@@ -296,6 +296,7 @@
         supports(feature) { return mpvVideoPlayer.getSupportedFeatures().includes(feature); }
         isFullscreen() { return window._isFullscreen === true; }
         toggleFullscreen() {
+            if (window.jmpInfo?.settings?.main?.lockFullscreen) return;
             if (window.jmpNative) window.jmpNative.toggleFullscreen();
         }
 

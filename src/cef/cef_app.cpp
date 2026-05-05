@@ -1,5 +1,6 @@
 #include "cef_app.h"
 #include "resource_handler.h"
+#include "../cjson/cJSON.h"
 #include "../settings.h"
 #include "../paths/paths.h"
 #include "embedded_js.h"
@@ -407,6 +408,7 @@ void App::OnContextCreated(CefRefPtr<CefBrowser> browser,
     };
     replace_first("__SERVER_URL__", Settings::instance().serverUrl());
     replace_first("__SETTINGS_JSON__", Settings::instance().cliSettingsJson());
+    replace_first("__LOCK_FULLSCREEN__", "false");
     if (profile->HasKey("device_profile_json"))
         replace_first("__DEVICE_PROFILE_JSON__",
                       profile->GetString("device_profile_json").ToString());

@@ -3,6 +3,7 @@
 #include "input.h"
 #include "../common.h"
 #include "../platform/platform.h"
+#include "../settings.h"
 
 namespace input {
 namespace {
@@ -28,6 +29,7 @@ bool hotkey_try_consume(const KeyEvent& e) {
 
     if (e.code == KeyCode::F || e.code == KeyCode::F11) {
         if (!video_player_active()) return false;
+        if (Settings::instance().lockFullscreen()) return true;
         g_platform.toggle_fullscreen();
         return true;
     }

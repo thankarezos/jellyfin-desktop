@@ -370,6 +370,7 @@ int main(int argc, char* argv[]) {
     bool audio_exclusive = false;
     std::string audio_channels_str;
     bool player_mode = false;
+    bool lock_fullscreen = false;
     bool disable_gpu_compositing = false;
     std::string ozone_platform;
     std::string platform_override;
@@ -386,6 +387,7 @@ int main(int argc, char* argv[]) {
     if (!saved.audioChannels().empty()) audio_channels_str = saved.audioChannels();
     std::string saved_log_level = saved.logLevel();
     if (!saved_log_level.empty()) log_level_str = saved_log_level.c_str();
+    lock_fullscreen = saved.lockFullscreen();
 
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
@@ -400,6 +402,7 @@ int main(int argc, char* argv[]) {
                    "  --audio-passthrough <codecs>  e.g. ac3,dts-hd,eac3,truehd\n"
                    "  --audio-exclusive         Exclusive audio output\n"
                    "  --audio-channels <layout> e.g. stereo, 5.1, 7.1\n"
+                   "  --lock-fullscreen         Disable fullscreen toggling\n"
                    "  --remote-debug-port <port> Chrome remote debugging\n"
                    "  --disable-gpu-compositing Disable CEF GPU compositing\n"
                    "  --ozone-platform <plat>   CEF ozone platform (default: follows --platform)\n"
@@ -434,6 +437,8 @@ int main(int argc, char* argv[]) {
             audio_channels_str = argv[++i];
         } else if (strncmp(argv[i], "--audio-channels=", 17) == 0) {
             audio_channels_str = argv[i] + 17;
+        } else if (strcmp(argv[i], "--lock-fullscreen") == 0) {
+            lock_fullscreen = true;
         } else if (strcmp(argv[i], "--remote-debug-port") == 0 && i + 1 < argc) {
             remote_debugging_port = atoi(argv[++i]);
         } else if (strncmp(argv[i], "--remote-debug-port=", 20) == 0) {
@@ -479,6 +484,7 @@ int main(int argc, char* argv[]) {
         }
     }
     initLogging(log_path.c_str(), log_level);
+    Settings::instance().setLockFullscreen(lock_fullscreen);
 
     if (player_mode && player_playlist.empty()) {
         fprintf(stderr, "Error: --player requires at least one file or URL\n");
