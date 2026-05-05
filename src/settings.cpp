@@ -6,8 +6,6 @@
 #include <sstream>
 #include <thread>
 
-#include "common.h"
-
 Settings& Settings::instance() {
     static Settings instance;
     return instance;
