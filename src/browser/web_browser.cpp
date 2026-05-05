@@ -104,7 +104,6 @@ CefRefPtr<CefDictionaryValue> WebBrowser::injectionProfile() {
         "input-plugin.js",
         "client-settings.js",
         "context-menu.js",
-        "disable-fullscreen-button.js",
     };
 
     CefRefPtr<CefListValue> fns = CefListValue::Create();

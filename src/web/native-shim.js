@@ -146,6 +146,38 @@
     window.jmpInfo.settings.main.lockFullscreen = lockFullscreenEnabled();
     window._fullscreenToggleLocked = window.jmpInfo.settings.main.lockFullscreen;
 
+    (function installFullscreenButtonHider() {
+        const styleId = 'jmp-kiosk-hide-fullscreen-style';
+        const selector = '.btnFullscreen, #btn-fullscreen';
+
+        function ensureStyle() {
+            if (!lockFullscreenEnabled()) return;
+            if (document.getElementById(styleId)) return;
+
+            const style = document.createElement('style');
+            style.id = styleId;
+            style.textContent = selector + '{display:none !important;}';
+            (document.head || document.documentElement).appendChild(style);
+        }
+
+        function startObserver() {
+            const root = document.documentElement;
+            if (!root) return;
+            const observer = new MutationObserver(ensureStyle);
+            observer.observe(root, { childList: true, subtree: true });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                ensureStyle();
+                startObserver();
+            }, { once: true });
+        } else {
+            ensureStyle();
+            startObserver();
+        }
+    })();
+
     // macOS-only: transparent titlebar toggle (shown first in Advanced section)
     if (navigator.platform.startsWith('Mac')) {
         jmpInfo.settingsDescriptions.advanced.unshift({
