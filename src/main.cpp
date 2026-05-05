@@ -62,6 +62,7 @@
 MpvHandle g_mpv;
 std::atomic<bool> g_shutting_down{false};
 WakeEvent g_shutdown_event;
+std::atomic<bool> g_lock_fullscreen{false};
 
 std::atomic<MediaType> g_media_type{MediaType::Unknown};
 std::atomic<PlaybackState> g_playback_state{PlaybackState::Stopped};
@@ -387,7 +388,6 @@ int main(int argc, char* argv[]) {
     if (!saved.audioChannels().empty()) audio_channels_str = saved.audioChannels();
     std::string saved_log_level = saved.logLevel();
     if (!saved_log_level.empty()) log_level_str = saved_log_level.c_str();
-    lock_fullscreen = saved.lockFullscreen();
 
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
@@ -484,7 +484,7 @@ int main(int argc, char* argv[]) {
         }
     }
     initLogging(log_path.c_str(), log_level);
-    Settings::instance().setLockFullscreen(lock_fullscreen);
+    g_lock_fullscreen.store(lock_fullscreen, std::memory_order_relaxed);
 
     if (player_mode && player_playlist.empty()) {
         fprintf(stderr, "Error: --player requires at least one file or URL\n");

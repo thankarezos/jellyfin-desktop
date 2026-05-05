@@ -117,6 +117,7 @@ CefRefPtr<CefDictionaryValue> WebBrowser::injectionProfile() {
     CefRefPtr<CefDictionaryValue> d = CefDictionaryValue::Create();
     d->SetList("functions", fns);
     d->SetList("scripts", scripts);
+    d->SetBool("lock_fullscreen", g_lock_fullscreen.load(std::memory_order_relaxed));
     const std::string& profile_json = jellyfin_device_profile::CachedJson();
     if (!profile_json.empty())
         d->SetString("device_profile_json", profile_json);
@@ -207,7 +208,7 @@ bool WebBrowser::handleMessage(const std::string& name,
                 g_platform.set_fullscreen(false);
         }
     } else if (name == "toggleFullscreen") {
-        if (!Settings::instance().lockFullscreen())
+        if (!g_lock_fullscreen.load(std::memory_order_relaxed))
             g_platform.toggle_fullscreen();
     } else if (name == "saveServerUrl") {
         std::string url = args->GetString(0).ToString();

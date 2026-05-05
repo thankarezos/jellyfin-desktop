@@ -2,7 +2,6 @@
 #include "about_browser.h"
 #include "../common.h"
 #include "../platform/platform.h"
-#include "../settings.h"
 
 extern Platform g_platform;
 
@@ -17,7 +16,7 @@ enum {
 
 void build(CefRefPtr<CefMenuModel> model) {
     model->AddItem(MENU_ID_TOGGLE_FULLSCREEN, "Toggle Fullscreen");
-    if (Settings::instance().lockFullscreen())
+    if (g_lock_fullscreen.load(std::memory_order_relaxed))
         model->SetEnabledAt(model->GetCount() - 1, false);
     model->AddItem(MENU_ID_ABOUT, "About");
     model->AddItem(MENU_ID_EXIT, "Exit");
@@ -26,7 +25,7 @@ void build(CefRefPtr<CefMenuModel> model) {
 bool dispatch(int command_id) {
     switch (command_id) {
     case MENU_ID_TOGGLE_FULLSCREEN:
-        if (!Settings::instance().lockFullscreen())
+        if (!g_lock_fullscreen.load(std::memory_order_relaxed))
             g_platform.toggle_fullscreen();
         return true;
     case MENU_ID_ABOUT: AboutBrowser::open(); return true;

@@ -34,6 +34,7 @@ class WakeEvent;
 
 extern MpvHandle g_mpv;
 extern Platform g_platform;
+extern std::atomic<bool> g_lock_fullscreen;
 // Cross-thread state: written from mpv event loop / CEF IPC thread,
 // read from input and rendering threads.
 extern std::atomic<MediaType> g_media_type;
